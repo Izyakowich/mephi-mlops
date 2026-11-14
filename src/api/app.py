@@ -1,4 +1,3 @@
-
 from functools import lru_cache
 from pathlib import Path
 
@@ -66,9 +65,7 @@ def load_model():
     """Загрузить модель один раз и сохранить в памяти."""
 
     if not MODEL_PATH.is_file():
-        raise FileNotFoundError(
-            f"Модель не найдена: {MODEL_PATH}"
-        )
+        raise FileNotFoundError(f"Модель не найдена: {MODEL_PATH}")
 
     return joblib.load(MODEL_PATH)
 
@@ -119,9 +116,7 @@ def predict(data: ClientData):
 
     # Подготовка признаков в порядке обучения
     if hasattr(model, "feature_names_in_"):
-        input_df = input_df[
-            list(model.feature_names_in_)
-        ]
+        input_df = input_df[list(model.feature_names_in_)]
 
     # Предсказание класса
     prediction = model.predict(input_df)

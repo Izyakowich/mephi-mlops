@@ -1,0 +1,30 @@
+{
+    "reference_samples": 24000,
+    "current_samples": 1000,
+    "api_url": "http://127.0.0.1:8000",
+    "features": {
+        "LIMIT_BAL": {
+            "psi": 0.008993,
+            "status": "stable"
+        },
+        "AGE": {
+            "psi": 0.007484,
+            "status": "stable"
+        },
+        "BILL_AMT1": {
+            "psi": 0.005473,
+            "status": "stable"
+        },
+        "PAY_AMT1": {
+            "psi": 0.008663,
+            "status": "stable"
+        }
+    },
+    "predictions": {
+        "count": 1000,
+        "mean_default_probability": 0.4352695079381144,
+        "min_default_probability": 0.008834744125706055,
+        "max_default_probability": 0.9610381043761284
+    },
+    "has_significant_drift": false
+}
