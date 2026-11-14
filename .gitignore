@@ -11,3 +11,6 @@ mlartifacts/
 
 # Local settings
 .env
+
+/train.csv
+/test.csv
