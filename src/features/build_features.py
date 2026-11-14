@@ -1,17 +1,62 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 
-def build_features(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    # 1. Биннинг возраста
-    df['AGE_BIN'] = pd.cut(df['AGE'], bins=[0, 25, 35, 45, 55, 100], labels=[0, 1, 2, 3, 4]).astype(int)
-    
-    # 2. Агрегации по платежам
-    pay_cols = ['PAY_AMT1', 'PAY_AMT2', 'PAY_AMT3', 'PAY_AMT4', 'PAY_AMT5', 'PAY_AMT6']
-    df['PAY_AMT_MEAN'] = df[pay_cols].mean(axis=1)
-    df['PAY_AMT_SUM'] = df[pay_cols].sum(axis=1)
-    
-    # 3. Отношение платежа к счету
-    df['PAY_TO_BILL_RATIO'] = df['PAY_AMT1'] / (df['BILL_AMT1'] + 1)
-    
-    return df
+
+class CreditFeatureEngineer(BaseEstimator, TransformerMixin):
+    """Создание дополнительных признаков кредитного риска."""
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X = X.copy()
+
+        bill_cols = [f"BILL_AMT{i}" for i in range(1, 7)]
+        pay_amt_cols = [f"PAY_AMT{i}" for i in range(1, 7)]
+        delay_cols = [
+            "PAY_0",
+            "PAY_2",
+            "PAY_3",
+            "PAY_4",
+            "PAY_5",
+            "PAY_6",
+        ]
+
+        # Средняя задолженность
+        X["AVG_BILL_AMT"] = X[bill_cols].mean(axis=1)
+
+        # Средний платеж
+        X["AVG_PAY_AMT"] = X[pay_amt_cols].mean(axis=1)
+
+        # Максимальная просрочка
+        X["MAX_DELAY"] = X[delay_cols].max(axis=1)
+
+        # Количество месяцев с просрочками
+        X["NUM_LATE_PAYMENTS"] = (X[delay_cols] > 0).sum(axis=1)
+
+        # Использование кредитного лимита
+        X["CREDIT_UTILIZATION"] = X["AVG_BILL_AMT"] / X["LIMIT_BAL"].replace(0, np.nan)
+
+        # Отношение платежей к задолженности
+        total_payments = X[pay_amt_cols].sum(axis=1)
+        total_bills = X[bill_cols].sum(axis=1)
+
+        X["PAYMENT_TO_BILL_RATIO"] = total_payments / total_bills.where(
+            total_bills > 0, np.nan
+        )
+
+        # Возрастные категории
+        X["AGE_GROUP"] = pd.cut(
+            X["AGE"],
+            bins=[17, 25, 35, 45, 60, 100],
+            labels=[
+                "18-25",
+                "26-35",
+                "36-45",
+                "46-60",
+                "61+",
+            ],
+        ).astype("object")
+
+        return X

@@ -1,10 +1,16 @@
+
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
 mlruns/
-data/raw/*.csv
-data/processed/
-models/
+mlartifacts/
+
+# Local settings
 .env
-*.log
-.mypy_cache/
+
+/train.csv
+/test.csv
