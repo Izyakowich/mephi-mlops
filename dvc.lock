@@ -1,0 +1,70 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.data.make_dataset
+    deps:
+    - path: data/raw/UCI_Credit_Card.csv
+      hash: md5
+      md5: 940b416bb13a9b24bb5c9e1589284005
+      size: 2862995
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: 4165d2437489eb6dd46bc8dc59a873e8
+      size: 1588
+    - path: src/data/validation.py
+      hash: md5
+      md5: 0a2593ff9c2eb531a8c4dbef0ab9ea86
+      size: 1746
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 036288fad0331c6e20dd5fce7a6644e3
+      size: 696070
+    - path: data/processed/train.csv
+      hash: md5
+      md5: a2d14978edfa15fd683ffe83018b0980
+      size: 2782455
+  train:
+    cmd: python -m src.models.train
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 036288fad0331c6e20dd5fce7a6644e3
+      size: 696070
+    - path: data/processed/train.csv
+      hash: md5
+      md5: a2d14978edfa15fd683ffe83018b0980
+      size: 2782455
+    - path: src/data/validation.py
+      hash: md5
+      md5: 0a2593ff9c2eb531a8c4dbef0ab9ea86
+      size: 1746
+    - path: src/features/build_features.py
+      hash: md5
+      md5: d4af327abf361962ad77a64ffd6cbe86
+      size: 1973
+    - path: src/models/pipeline.py
+      hash: md5
+      md5: 96aa299096bc5c2949081b42da27c9f5
+      size: 2713
+    - path: src/models/train.py
+      hash: md5
+      md5: a8ef1fc06ad1aeb5068b6cb1a0e63224
+      size: 7800
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: fb333e9e9ba39a3039500ce371888541
+      size: 145
+    - path: models/credit_default_model.pkl
+      hash: md5
+      md5: aace1498487f88b12bba8b23b6e5b971
+      size: 8598
+    - path: reports/cv_results.csv
+      hash: md5
+      md5: 7b5cea78958d73618e49cbf00db7257b
+      size: 1232
+    - path: reports/roc_curve.png
+      hash: md5
+      md5: 06b63d410cdddce02145c457b2b858a0
+      size: 68166
